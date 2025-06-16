@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio API Test Client</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .section {
+      margin-bottom: 30px;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    button {
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    textarea {
+      width: 100%;
+      height: 120px;
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .output {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      margin-bottom: 10px;
+    }
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 10px 16px;
+      transition: 0.3s;
+      color: black;
+    }
+    .tab button:hover {
+      background-color: #ddd;
+    }
+    .tab button.active {
+      background-color: #ccc;
+    }
+    .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Portfolio API Test Client</h1>
+  
+  <div class="tab">
+    <button class="tablinks active" onclick="openEntity(event, 'Education')">Education</button>
+    <button class="tablinks" onclick="openEntity(event, 'Skills')">Skills</button>
+    <button class="tablinks" onclick="openEntity(event, 'Projects')">Projects</button>
+    <button class="tablinks" onclick="openEntity(event, 'Experience')">Experience</button>
+  </div>
+  
+  <div id="Education" class="tabcontent" style="display:block;">
+    <div class="section">
+      <h2>Education</h2>
+      <button onclick="fetchData('education')">Get All</button>
+      <button onclick="showForm('education')">Add New</button>
+      <div id="education-form" style="display:none;">
+        <textarea id="education-data" placeholder="Enter education data in JSON format">
+{
+  "institution": "University Name",
+  "degree": "Bachelor of Science",
+  "field": "Computer Science",
+  "startDate": "2019-09-01",
+  "endDate": "2023-06-30",
+  "current": false,
+  "description": "Studied computer science with a focus on software development",
+  "location": "City, Country",
+  "gpa": "3.8"
+}
+        </textarea>
+        <button onclick="postData('education')">Submit</button>
+      </div>
+      <div id="education-output" class="output"></div>
+    </div>
+  </div>
+  
+  <div id="Skills" class="tabcontent">
+    <div class="section">
+      <h2>Skills</h2>
+      <button onclick="fetchData('skills')">Get All</button>
+      <button onclick="showForm('skills')">Add New</button>
+      <div id="skills-form" style="display:none;">
+        <textarea id="skills-data" placeholder="Enter skill data in JSON format">
+{
+  "name": "JavaScript",
+  "level": "Advanced",
+  "category": "Frontend",
+  "yearsOfExperience": 3
+}
+        </textarea>
+        <button onclick="postData('skills')">Submit</button>
+      </div>
+      <div id="skills-output" class="output"></div>
+    </div>
+  </div>
+  
+  <div id="Projects" class="tabcontent">
+    <div class="section">
+      <h2>Projects</h2>
+      <button onclick="fetchData('projects')">Get All</button>
+      <button onclick="showForm('projects')">Add New</button>
+      <div id="projects-form" style="display:none;">
+        <textarea id="projects-data" placeholder="Enter project data in JSON format">
+{
+  "title": "Portfolio Website",
+  "description": "A personal portfolio website built with React and Node.js",
+  "image": "portfolio.jpg",
+  "technologies": ["React", "Node.js", "Express", "MongoDB"],
+  "githubUrl": "https://github.com/username/portfolio",
+  "liveUrl": "https://portfolio.example.com",
+  "startDate": "2023-01-01",
+  "endDate": "2023-02-15",
+  "featured": true
+}
+        </textarea>
+        <button onclick="postData('projects')">Submit</button>
+      </div>
+      <div id="projects-output" class="output"></div>
+    </div>
+  </div>
+  
+  <div id="Experience" class="tabcontent">
+    <div class="section">
+      <h2>Experience</h2>
+      <button onclick="fetchData('experience')">Get All</button>
+      <button onclick="showForm('experience')">Add New</button>
+      <div id="experience-form" style="display:none;">
+        <textarea id="experience-data" placeholder="Enter experience data in JSON format">
+{
+  "company": "Company Name",
+  "position": "Software Developer",
+  "location": "City, Country",
+  "description": "Worked on developing web applications",
+  "responsibilities": [
+    "Developed and maintained web applications",
+    "Collaborated with cross-functional teams"
+  ],
+  "startDate": "2021-06-01",
+  "endDate": "2023-01-31",
+  "current": false,
+  "technologies": ["JavaScript", "React", "Node.js"]
+}
+        </textarea>
+        <button onclick="postData('experience')">Submit</button>
+      </div>
+      <div id="experience-output" class="output"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    
+    function openEntity(evt, entityName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(entityName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+    
+    function showForm(entity) {
+      const formElement = document.getElementById(`${entity}-form`);
+      formElement.style.display = formElement.style.display === 'none' ? 'block' : 'none';
+    }
+    
+    function fetchData(entity) {
+      fetch(`${API_URL}/${entity}`)
+        .then(response => response.json())
+        .then(data => {
+          const output = document.getElementById(`${entity}-output`);
+          output.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => {
+          const output = document.getElementById(`${entity}-output`);
+          output.innerHTML = `<pre>Error: ${error.message}</pre>`;
+        });
+    }
+    
+    function postData(entity) {
+      const dataElement = document.getElementById(`${entity}-data`);
+      const data = JSON.parse(dataElement.value);
+      
+      fetch(`${API_URL}/${entity}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => response.json())
+        .then(result => {
+          const output = document.getElementById(`${entity}-output`);
+          output.innerHTML = `<pre>Created: ${JSON.stringify(result, null, 2)}</pre>`;
+          fetchData(entity);
+        })
+        .catch(error => {
+          const output = document.getElementById(`${entity}-output`);
+          output.innerHTML = `<pre>Error: ${error.message}</pre>`;
+        });
+    }
+  </script>
+</body>
+</html>
